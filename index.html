@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ OURFRAME — Photobooth</title>
+<link rel="icon" href="Screenshot 2026-03-04 143117.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="curtain"></div>
+
+<!-- ══════════ LANDING PAGE ══════════ -->
+<div id="landing">
+  <div class="landing-bg-strips">
+    <div class="bg-strip" id="bs1"></div>
+    <div class="bg-strip" id="bs2"></div>
+    <div class="bg-strip" id="bs3"></div>
+    <div class="bg-strip" id="bs4"></div>
+    <div class="bg-strip" id="bs5"></div>
+    <div class="bg-strip" id="bs6"></div>
+  </div>
+
+  <div class="landing-corner ltl"></div>
+  <div class="landing-corner ltr"></div>
+  <div class="landing-corner lbl"></div>
+  <div class="landing-corner lbr"></div>
+
+  <div class="landing-content">
+    <div class="landing-pre">✦ Digital Photobooth ✦</div>
+
+    <div class="landing-logo-mark">
+      <div class="spin-ring"></div>
+    </div>
+
+    <h1 class="landing-title">Our <em>frame</em></h1>
+    <p class="landing-sub">✦ INI PUNYA KITA, PUNYA KALIAN MANA?? ✦</p>
+
+    <div class="landing-divider">
+      <span class="landing-divider-text">Siap untuk berfoto?</span>
+    </div>
+
+    <div class="landing-cta">
+      <button class="btn-enter" onclick="enterApp()">
+        <span>Mulai Sesi Foto <span class="btn-enter-arrow">→</span></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ STRIP MODAL (mobile) ══════════ -->
+<div class="strip-modal-overlay" id="strip-modal-overlay" onclick="closeStripModal(event)">
+  <div class="strip-modal">
+    <div class="strip-modal-header">
+      <span class="strip-modal-title">Strip Preview</span>
+      <button class="strip-modal-close" onclick="closeStripModalDirect()">✕</button>
+    </div>
+
+    <div id="modal-strip-content">
+      <div class="strip-header">
+        <div class="strip-header-text" id="modal-strip-title">✦ OurFrame ✦</div>
+      </div>
+      <div id="modal-strip-container" style="display:flex;flex-direction:column;gap:5px;">
+        <div class="photo-slot" id="mslot-0"><span class="slot-num">1</span></div>
+        <div class="photo-slot" id="mslot-1"><span class="slot-num">2</span></div>
+        <div class="photo-slot" id="mslot-2"><span class="slot-num">3</span></div>
+        <div class="photo-slot" id="mslot-3"><span class="slot-num">4</span></div>
+      </div>
+      <div class="strip-footer" id="modal-strip-date"></div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="sidebar-title">Frame Theme</div>
+      <div class="frame-grid" id="modal-frame-grid">
+        <button class="frame-option active" onclick="setFrame(this,'cream')" data-frame="cream"><span class="frame-emoji">🤍</span>Classic</button>
+        <button class="frame-option" onclick="setFrame(this,'dark')" data-frame="dark"><span class="frame-emoji">🖤</span>Noir</button>
+        <button class="frame-option" onclick="setFrame(this,'rose')" data-frame="rose"><span class="frame-emoji">🌸</span>Rosé</button>
+        <button class="frame-option" onclick="setFrame(this,'gold')" data-frame="gold"><span class="frame-emoji">✨</span>Gold</button>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+      <button class="btn-download" id="modal-btn-download" disabled onclick="downloadStrip()">↓ Unduh Strip</button>
+      <button class="btn-reset" onclick="resetPhotos()">↺ Mulai Ulang</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PHOTOBOOTH APP ══════════ -->
+<div id="app">
+
+<header>
+  <div class="logo">
+    <img class="logo-img" src="image-removebg-preview (4).png" alt="OurFrame Logo">
+    <div class="logo-divider"></div>
+    <div class="logo-text">
+      <span class="logo-text-main">Our <em>frame</em></span>
+      <span class="logo-text-sub">✦ Photobooth ✦</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn-back" onclick="backToLanding()">← Kembali</button>
+    <div class="header-tag">✦ Digital Photobooth ✦</div>
+  </div>
+</header>
+
+<div class="studio">
+
+  <!-- ══ CAMERA ZONE ══ -->
+  <div class="camera-zone">
+    <div class="section-label">Viewfinder</div>
+
+    <div class="viewfinder-wrap" id="viewfinder">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas-preview"></canvas>
+      <div class="filter-overlay" id="filter-overlay"></div>
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <div class="crosshair"></div>
+      <canvas id="effect-canvas"></canvas>
+      <div id="countdown-overlay"><div id="countdown-num">3</div></div>
+      <div id="flash"></div>
+      <div class="capture-ring" id="capture-ring"></div>
+    </div>
+
+    <!-- FILTERS — collapsible on mobile -->
+    <div class="section-filters" id="section-filters">
+      <button class="collapsible-header" onclick="toggleSection('section-filters')">
+        <span>Preset & Adjust</span>
+        <span class="collapsible-arrow">▾</span>
+      </button>
+      <div class="collapsible-content">
+        <div class="section-label" style="margin-bottom:10px;">Preset</div>
+        <div class="filter-grid">
+          <button class="filter-btn active" onclick="applyPreset(this,'original')">Original</button>
+          <button class="filter-btn" onclick="applyPreset(this,'bw')">B&W</button>
+          <button class="filter-btn" onclick="applyPreset(this,'vintage')">Vintage</button>
+          <button class="filter-btn" onclick="applyPreset(this,'cool')">Cool</button>
+          <button class="filter-btn" onclick="applyPreset(this,'warm')">Warm</button>
+          <button class="filter-btn" onclick="applyPreset(this,'drama')">Drama</button>
+        </div>
+
+        <div class="section-label" style="margin-bottom:12px;margin-top:6px;">Adjust</div>
+        <div class="adjust-grid">
+          <div class="adjust-row">
+            <span class="adjust-label">Brightness</span>
+            <input type="range" id="sl-brightness" min="0" max="200" value="100" oninput="updateFilter()">
+            <span class="adjust-val" id="val-brightness">100</span>
+          </div>
+          <div class="adjust-row">
+            <span class="adjust-label">Contrast</span>
+            <input type="range" id="sl-contrast" min="0" max="200" value="100" oninput="updateFilter()">
+            <span class="adjust-val" id="val-contrast">100</span>
+          </div>
+          <div class="adjust-row">
+            <span class="adjust-label">Saturasi</span>
+            <input type="range" id="sl-saturate" min="0" max="300" value="100" oninput="updateFilter()">
+            <span class="adjust-val" id="val-saturate">100</span>
+          </div>
+          <div class="adjust-row">
+            <span class="adjust-label">Sepia</span>
+            <input type="range" id="sl-sepia" min="0" max="100" value="0" oninput="updateFilter()">
+            <span class="adjust-val" id="val-sepia">0</span>
+          </div>
+          <div class="adjust-row">
+            <span class="adjust-label">Hue</span>
+            <input type="range" id="sl-hue" min="0" max="360" value="0" oninput="updateFilter()">
+            <span class="adjust-val" id="val-hue">0°</span>
+          </div>
+          <div class="adjust-row">
+            <span class="adjust-label">Blur</span>
+            <input type="range" id="sl-blur" min="0" max="10" value="0" step="0.1" oninput="updateFilter()">
+            <span class="adjust-val" id="val-blur">0</span>
+          </div>
+        </div>
+        <button class="btn-reset-filter" onclick="resetFilter()">↺ Reset Filter</button>
+      </div>
+    </div>
+
+    <!-- EFFECTS — collapsible on mobile -->
+    <div class="section-effects" id="section-effects">
+      <button class="collapsible-header" onclick="toggleSection('section-effects')">
+        <span>Efek Overlay</span>
+        <span class="collapsible-arrow">▾</span>
+      </button>
+      <div class="collapsible-content">
+        <div class="section-label" style="margin-bottom:10px;">Efek Overlay</div>
+        <div class="effect-grid">
+          <button class="effect-btn active" onclick="setEffect(this,'none')"><span class="effect-icon">✕</span>Tanpa Efek</button>
+          <button class="effect-btn" onclick="setEffect(this,'vignette')"><span class="effect-icon">🔲</span>Vignette</button>
+          <button class="effect-btn" onclick="setEffect(this,'grain')"><span class="effect-icon">📺</span>Film Grain</button>
+          <button class="effect-btn" onclick="setEffect(this,'lightleak')"><span class="effect-icon">🌅</span>Light Leak</button>
+          <button class="effect-btn" onclick="setEffect(this,'hearts')"><span class="effect-icon">💕</span>Hearts</button>
+          <button class="effect-btn" onclick="setEffect(this,'stars')"><span class="effect-icon">✨</span>Stars</button>
+          <button class="effect-btn" onclick="setEffect(this,'rainbow')"><span class="effect-icon">🌈</span>Rainbow</button>
+          <button class="effect-btn" onclick="setEffect(this,'glitch')"><span class="effect-icon">⚡</span>Glitch</button>
+          <button class="effect-btn" onclick="setEffect(this,'bubbles')"><span class="effect-icon">🫧</span>Bubbles</button>
+          <button class="effect-btn" onclick="setEffect(this,'snow')"><span class="effect-icon">❄️</span>Snow</button>
+          <button class="effect-btn" onclick="setEffect(this,'confetti')"><span class="effect-icon">🎊</span>Confetti</button>
+          <button class="effect-btn" onclick="setEffect(this,'scanlines')"><span class="effect-icon">📡</span>Scanlines</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPTURE CONTROLS -->
+    <div class="controls-row">
+      <div style="text-align:center">
+        <div class="strip-count">
+          <strong id="photo-counter">0</strong>
+          foto / 4
+        </div>
+      </div>
+      <button class="btn-capture" id="btn-capture" onclick="startCountdown()">✦ Ambil Foto</button>
+      <button class="btn-secondary" onclick="toggleMirror()" title="Mirror">⇄</button>
+    </div>
+
+    <div id="status-msg">Kamera siap — tekan tombol untuk mulai</div>
+
+    <!-- Mobile strip preview button -->
+    <button class="mobile-strip-btn" onclick="openStripModal()">🎞 Lihat Strip Preview & Unduh</button>
+  </div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <!-- Desktop strip preview (hidden on mobile) -->
+    <div class="sidebar-section" id="desktop-strip-section">
+      <div class="sidebar-title">Strip Preview</div>
+      <div id="strip-normal-content">
+        <div class="strip-header">
+          <div class="strip-header-text" id="strip-title">✦ OurFrame ✦</div>
+        </div>
+        <div class="strip-container" id="strip-container">
+          <div class="photo-slot" id="slot-0"><span class="slot-num">1</span></div>
+          <div class="photo-slot" id="slot-1"><span class="slot-num">2</span></div>
+          <div class="photo-slot" id="slot-2"><span class="slot-num">3</span></div>
+          <div class="photo-slot" id="slot-3"><span class="slot-num">4</span></div>
+        </div>
+        <div class="strip-footer" id="strip-date"></div>
+      </div>
+      <canvas id="custom-preview-canvas" style="display:none;width:100%;border:2px solid var(--warm);"></canvas>
+    </div>
+
+    <!-- Frame theme + custom strip -->
+    <div class="sidebar-section" id="sidebar-inner" style="overflow:auto;max-height:none;">
+      <div class="sidebar-title">Frame Theme</div>
+      <div class="frame-grid" id="desktop-frame-grid">
+        <button class="frame-option active" onclick="setFrame(this,'cream')" data-frame="cream"><span class="frame-emoji">🤍</span>Classic</button>
+        <button class="frame-option" onclick="setFrame(this,'dark')" data-frame="dark"><span class="frame-emoji">🖤</span>Noir</button>
+        <button class="frame-option" onclick="setFrame(this,'rose')" data-frame="rose"><span class="frame-emoji">🌸</span>Rosé</button>
+        <button class="frame-option" onclick="setFrame(this,'gold')" data-frame="gold"><span class="frame-emoji">✨</span>Gold</button>
+      </div>
+
+      <div style="margin-top:16px; border-top:1.5px dashed rgba(26,20,16,0.2); padding-top:16px;">
+        <div class="sidebar-title" style="margin-bottom:10px;">Custom Strip</div>
+
+        <div id="custom-step-upload">
+          <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 10px;border:2px dashed rgba(26,20,16,0.3);cursor:pointer;transition:all 0.2s;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--warm);text-align:center;"
+          onmouseover="this.style.borderColor='var(--warm)';this.style.background='rgba(200,169,110,0.08)'"
+          onmouseout="this.style.borderColor='rgba(26,20,16,0.3)';this.style.background='transparent'">
+            <span style="font-size:24px;">🖼</span>
+            Upload Desain Strip Kamu
+            <span style="opacity:0.6;font-size:7px;">PNG / JPG</span>
+            <input type="file" accept="image/*" style="display:none" onchange="loadCustomStrip(event)">
+          </label>
+        </div>
+
+        <div id="custom-step-draw" style="display:none;">
+          <div id="detect-status" style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--warm);margin-bottom:8px;line-height:1.8;">
+            🔍 Mendeteksi slot foto otomatis...
+          </div>
+          <div style="position:relative;display:block;width:100%;" id="strip-draw-wrap">
+            <img id="strip-draw-img" style="width:100%;display:block;border:2px solid var(--warm);user-select:none;" draggable="false"/>
+            <canvas id="strip-draw-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+          </div>
+          <div id="slot-adjuster" style="display:none;margin-top:10px;">
+            <div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--warm);margin-bottom:6px;">Jumlah slot terdeteksi:</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <button onclick="adjustSlotCount(-1)" style="width:32px;height:32px;font-size:18px;border:1.5px solid var(--dark);background:transparent;cursor:pointer;color:var(--dark);">−</button>
+              <span id="slot-count-display" style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;flex:1;text-align:center;">4</span>
+              <button onclick="adjustSlotCount(1)" style="width:32px;height:32px;font-size:18px;border:1.5px solid var(--dark);background:transparent;cursor:pointer;color:var(--dark);">+</button>
+            </div>
+            <div style="font-size:7px;color:rgba(26,20,16,0.5);text-align:center;margin-top:4px;letter-spacing:1px;">kotak berwarna = slot yang dideteksi</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="resetCustomStrip()" style="flex:1;padding:8px;font-family:'Space Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;background:transparent;color:var(--warm);border:1.5px solid var(--warm);cursor:pointer;">✕ Ganti</button>
+          </div>
+          <button id="btn-activate-custom" onclick="activateCustomStrip()" disabled style="width:100%;margin-top:8px;padding:12px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;background:var(--dark);color:var(--warm);border:none;cursor:pointer;box-shadow:3px 3px 0 var(--warm);opacity:0.4;transition:all 0.2s;">✦ Gunakan Strip Ini</button>
+        </div>
+
+        <div id="custom-active-bar" style="display:none;margin-top:10px;padding:8px 10px;background:rgba(200,169,110,0.15);border:1.5px solid var(--warm);font-family:'Space Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--warm);align-items:center;justify-content:space-between;">
+          <span>🌸 Custom Strip Aktif</span>
+          <button onclick="resetCustomStrip()" style="background:none;border:none;cursor:pointer;color:var(--rose);font-size:12px;">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download area (desktop) -->
+    <div class="download-area" id="desktop-download">
+      <button class="btn-download" id="btn-download" disabled onclick="downloadStrip()">↓ Unduh Strip</button>
+      <button class="btn-reset" onclick="resetPhotos()">↺ Mulai Ulang</button>
+      <div id="status-msg-desktop" style="font-size:9px;letter-spacing:1px;text-align:center;color:var(--warm);min-height:16px;margin-top:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<canvas id="final-canvas" style="display:none;"></canvas>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
