@@ -176,7 +176,7 @@ body::before {
   display: inline-block;
   width: 800px;
   height: 200px;
-  background-image: url("image-removebg-preview (4).png");
+  background-image: url("asset/image-removebg-preview (4).png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -234,18 +234,30 @@ body::before {
   to   { width: 100%; }
 }
 
-.landing-sub {
-  font-family: 'Space Mono', monospace;
+.landing-sub {  font-family: 'Space Mono', monospace;
   font-size: clamp(7px, 1.5vw, 11px);
   letter-spacing: 4px;
   text-transform: uppercase;
   color: var(--warm);
-  margin-bottom: 36px;
+  margin-bottom: 10px;
   opacity: 0;
   transform: translateY(10px);
   animation: fade-up 0.7s ease forwards;
   animation-delay: 0.8s;
   padding: 0 10px;
+}
+
+.landing-by {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(7px, 1.2vw, 10px);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(200,169,110,0.5);
+  margin-bottom: 30px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fade-up 0.7s ease forwards;
+  animation-delay: 0.85s;
 }
 
 .landing-divider {
@@ -715,6 +727,56 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; background: var
 
 /* Custom Strip upload area */
 #custom-step-upload label { min-height: 90px; }
+
+/* ═══════════════════════════════════════════════
+   COPYRIGHT & FOOTER
+═══════════════════════════════════════════════ */
+
+/* Landing page copyright — bottom center */
+.landing-copyright {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(200,169,110,0.38);
+  white-space: nowrap;
+  z-index: 12;
+  opacity: 0;
+  animation: fade-up 0.7s ease forwards;
+  animation-delay: 1.6s;
+}
+
+/* Site footer — bottom of app */
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1.5px solid rgba(26,20,16,0.12);
+  background: var(--cream);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(26,20,16,0.35);
+  flex-wrap: wrap;
+}
+
+.site-footer strong {
+  color: var(--warm);
+  font-weight: 700;
+}
+
+.site-footer-dot {
+  color: var(--warm);
+  opacity: 0.5;
+  font-size: 7px;
+}
 
 /* ═══════════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
