@@ -648,9 +648,14 @@ function runEffect() {
     effectAnimId=requestAnimationFrame(runEffect); return;
   }
   if (currentEffect === 'grain') {
-    const id=ectx.createImageData(W,H),d=id.data;
-    for(let i=0;i<d.length;i+=4){const n=(Math.random()-0.5)*70;d[i]=d[i+1]=d[i+2]=128+n;d[i+3]=Math.random()*45;}
-    ectx.putImageData(id,0,0);
+    const dotCount = Math.floor(W * H * 0.08);
+    for (let i = 0; i < dotCount; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const bright = Math.random() > 0.5;
+      ectx.fillStyle = bright ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';
+      ectx.fillRect(x, y, 1.5, 1.5);
+    }
     effectAnimId=requestAnimationFrame(runEffect); return;
   }
 
@@ -739,9 +744,14 @@ function drawEffectOnCanvas(ctx, W, H) {
     ctx.fillStyle='rgba(255,0,80,0.07)';ctx.fillRect(4,0,W,H);
     ctx.fillStyle='rgba(0,200,255,0.07)';ctx.fillRect(-4,0,W,H);
   } else if(currentEffect==='grain'){
-    const id=ctx.createImageData(W,H),d=id.data;
-    for(let i=0;i<d.length;i+=4){const n=(Math.random()-0.5)*70;d[i]=d[i+1]=d[i+2]=128+n;d[i+3]=Math.random()*45;}
-    ctx.putImageData(id,0,0);
+    const dotCount = Math.floor(W * H * 0.08);
+    for (let i = 0; i < dotCount; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const bright = Math.random() > 0.5;
+      ctx.fillStyle = bright ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';
+      ctx.fillRect(x, y, 1.5, 1.5);
+    }
   } else {
     effectParticles.forEach(p=>{
       if(currentEffect==='hearts'||currentEffect==='stars'){
