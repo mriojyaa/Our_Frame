@@ -154,7 +154,8 @@ const presets = {
   vintage:  { brightness:95,  contrast:110, saturate:120, sepia:60, hue:0,   blur:0 },
   cool:     { brightness:105, contrast:100, saturate:130, sepia:0,  hue:180, blur:0 },
   warm:     { brightness:105, contrast:100, saturate:140, sepia:30, hue:0,   blur:0 },
-  drama:    { brightness:90,  contrast:140, saturate:130, sepia:0,  hue:0,   blur:0 }
+  drama:    { brightness:90,  contrast:140, saturate:130, sepia:0,  hue:0,   blur:0 },
+  analog:   { brightness:98,  contrast:125, saturate:80,  sepia:22, hue:8,   blur:0 }
 };
 
 function buildFilterString(s) {
@@ -647,8 +648,48 @@ function runEffect() {
     }
     effectAnimId=requestAnimationFrame(runEffect); return;
   }
-  if (currentEffect === 'grain') {
-    const dotCount = Math.floor(W * H * 0.08);
+  if (currentEffect === 'analog') {
+    // Warm yellowish color wash
+    ectx.fillStyle = 'rgba(210,180,100,0.10)';
+    ectx.fillRect(0, 0, W, H);
+
+    // Faded/lifted shadows — light overlay on dark areas (milky blacks)
+    const fadeGrad = ectx.createLinearGradient(0, 0, 0, H);
+    fadeGrad.addColorStop(0, 'rgba(245,235,200,0.06)');
+    fadeGrad.addColorStop(1, 'rgba(200,170,120,0.12)');
+    ectx.fillStyle = fadeGrad;
+    ectx.fillRect(0, 0, W, H);
+
+    // Vignette
+    const vig = ectx.createRadialGradient(W/2, H/2, H*0.15, W/2, H/2, H*0.9);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(0.6, 'rgba(10,5,0,0.15)');
+    vig.addColorStop(1, 'rgba(10,5,0,0.65)');
+    ectx.fillStyle = vig;
+    ectx.fillRect(0, 0, W, H);
+
+    // Film grain
+    const dotCount = Math.floor(W * H * 0.06);
+    for (let i = 0; i < dotCount; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const bright = Math.random() > 0.5;
+      ectx.fillStyle = bright ? 'rgba(255,245,210,0.16)' : 'rgba(0,0,0,0.14)';
+      ectx.fillRect(x, y, 1.5, 1.5);
+    }
+
+    // Subtle horizontal light leak at top
+    const leak = ectx.createLinearGradient(0, 0, W, 0);
+    leak.addColorStop(0,   'rgba(255,210,120,0.13)');
+    leak.addColorStop(0.3, 'rgba(255,210,120,0.04)');
+    leak.addColorStop(1,   'rgba(255,210,120,0)');
+    ectx.fillStyle = leak;
+    ectx.fillRect(0, 0, W, H * 0.35);
+
+    effectAnimId = requestAnimationFrame(runEffect); return;
+  }
+
+  if (currentEffect === 'grain') {    const dotCount = Math.floor(W * H * 0.08);
     for (let i = 0; i < dotCount; i++) {
       const x = Math.random() * W;
       const y = Math.random() * H;
@@ -722,6 +763,31 @@ function runEffect() {
 
 function drawEffectOnCanvas(ctx, W, H) {
   if(currentEffect==='none') return;
+  if(currentEffect==='analog'){
+    ctx.fillStyle='rgba(210,180,100,0.10)';
+    ctx.fillRect(0,0,W,H);
+    const fadeGrad=ctx.createLinearGradient(0,0,0,H);
+    fadeGrad.addColorStop(0,'rgba(245,235,200,0.06)');
+    fadeGrad.addColorStop(1,'rgba(200,170,120,0.12)');
+    ctx.fillStyle=fadeGrad; ctx.fillRect(0,0,W,H);
+    const vig=ctx.createRadialGradient(W/2,H/2,H*0.15,W/2,H/2,H*0.9);
+    vig.addColorStop(0,'rgba(0,0,0,0)');
+    vig.addColorStop(0.6,'rgba(10,5,0,0.15)');
+    vig.addColorStop(1,'rgba(10,5,0,0.65)');
+    ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+    const dotCount=Math.floor(W*H*0.06);
+    for(let i=0;i<dotCount;i++){
+      const x=Math.random()*W, y=Math.random()*H;
+      ctx.fillStyle=Math.random()>0.5?'rgba(255,245,210,0.16)':'rgba(0,0,0,0.14)';
+      ctx.fillRect(x,y,1.5,1.5);
+    }
+    const leak=ctx.createLinearGradient(0,0,W,0);
+    leak.addColorStop(0,'rgba(255,210,120,0.13)');
+    leak.addColorStop(0.3,'rgba(255,210,120,0.04)');
+    leak.addColorStop(1,'rgba(255,210,120,0)');
+    ctx.fillStyle=leak; ctx.fillRect(0,0,W,H*0.35);
+    return;
+  }
   if(currentEffect==='vignette'){
     const g=ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.85);
     g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,0.65)');
