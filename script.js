@@ -561,6 +561,10 @@ function downloadStrip() {
     const fy=STRIP_H-FOOTER_H/2-4;
     ctx.fillStyle=theme.accent; ctx.font='11px "Courier New",monospace'; ctx.textAlign='center';
     ctx.fillText(new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase(), STRIP_W/2, fy);
+    ctx.font='9px "Courier New",monospace';
+    ctx.globalAlpha = 0.55;
+    ctx.fillText('© mario — ourframe photobooth', STRIP_W/2, fy + 15);
+    ctx.globalAlpha = 1;
     ctx.strokeStyle=theme.accent; ctx.lineWidth=1; ctx.globalAlpha=0.4;
     ctx.beginPath(); ctx.moveTo(PAD,STRIP_H-FOOTER_H); ctx.lineTo(STRIP_W-PAD,STRIP_H-FOOTER_H); ctx.stroke();
     ctx.globalAlpha=1;
