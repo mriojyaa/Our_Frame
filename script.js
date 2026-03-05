@@ -449,18 +449,47 @@ function capturePhoto() {
   captureRing.classList.remove('animate');
   void captureRing.offsetWidth;
   captureRing.classList.add('animate');
-  const w = video.videoWidth || 640;
+
+  const w = video.videoWidth  || 640;
   const h = video.videoHeight || 480;
+
+  // Ambil dimensi viewfinder yang tampil di layar
+  const vfEl  = document.getElementById('viewfinder');
+  const dispW = vfEl.offsetWidth;
+  const dispH = vfEl.offsetHeight;
+
+  // Hitung crop agar foto sesuai apa yang terlihat di viewfinder (object-fit: cover)
+  const videoAR = w / h;
+  const dispAR  = dispW / dispH;
+
+  let sx = 0, sy = 0, sw = w, sh = h;
+  if (videoAR > dispAR) {
+    // video lebih lebar — crop kiri & kanan
+    sh = h;
+    sw = Math.round(h * dispAR);
+    sx = Math.round((w - sw) / 2);
+  } else {
+    // video lebih tinggi — crop atas & bawah
+    sw = w;
+    sh = Math.round(w / dispAR);
+    sy = Math.round((h - sh) / 2);
+  }
+
   const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h;
+  canvas.width  = dispW * 2;   // 2x untuk resolusi lebih tajam
+  canvas.height = dispH * 2;
   const ctx = canvas.getContext('2d');
+
   ctx.save();
-  if (isMirrored) { ctx.translate(w, 0); ctx.scale(-1, 1); }
+  if (isMirrored) {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.filter = buildFilterString(filterState);
-  ctx.drawImage(video, 0, 0, w, h);
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
   ctx.restore();
   ctx.filter = 'none';
-  drawEffectOnCanvas(ctx, w, h);
+  drawEffectOnCanvas(ctx, canvas.width, canvas.height);
   const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
   photos.push(dataUrl);
   updateStrip();
